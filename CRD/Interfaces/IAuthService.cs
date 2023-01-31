@@ -1,9 +1,8 @@
-﻿namespace CRD.Services.AuthService
+﻿namespace CRD.Interfaces
 {
     public interface IAuthService
     {
         string CreateToken(CreateTokenModel user);
-        User Login(UserLoginRequestDto request);
 
     }
 }

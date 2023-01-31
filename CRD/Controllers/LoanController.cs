@@ -1,49 +1,56 @@
 using CRD.Enums;
+using CRD.Interfaces;
 using CRD.Models;
-using CRD.Services.LoanService;
-using CRD.Services.UserService;
+using log4net;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRD.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    public class LoanController : Controller
+    public class LoanController : ApiBaseController
     {
 
         private readonly ILoanService _loanService;
-        public LoanController(ILoanService loanService)
+        private IConfiguration _configuration;
+        private static readonly ILog log = LogManager.GetLogger("Rolling", nameof(LoanController));
+        public LoanController(IConfiguration configuration, ILoanService loanService) : base(configuration)
         {
+            this._configuration = configuration;
             this._loanService = loanService;
         }
 
 
 
         [HttpGet(nameof(GetUserLoans))]
-        public async Task<ActionResult<List<Loan>>> GetUserLoans(int userID)
-        {
-            var result = _loanService.GetUserLoans(userID);
 
-            return Ok(result);
+        [ProducesResponseType(typeof(GenericResponse<List<Loan>>), 200)]
+        public async Task<IActionResult> GetUserLoans(int userID)
+        {
+            var result = await _loanService.GetUserLoans(userID);
+
+            return JsonContent(result);
         }
 
 
 
-        [HttpPut(nameof(UpdateUserLoans))]
-        public async Task<ActionResult<List<Loan>>> UpdateUserLoans(Loan request)
+        [HttpPut(nameof(UpdateUserLoan))]
+        [ProducesResponseType(typeof(GenericResponseWithoutData), 200)]
+        public async Task<IActionResult> UpdateUserLoan(Loan request)
         {
-            var result = _loanService.UpdateUserLoans(request);
+            var result = await _loanService.UpdateUserLoan(request);
 
-            return Ok(result);
+            return JsonContent(result);
         }
 
-        [HttpPost(nameof(AddUserLoans))]
-        public async Task<ActionResult<Loan>> AddUserLoans(Loan request)
-        {
-            var result = _loanService.AddUserLoans(request);
+        [HttpPost(nameof(AddUserLoan))]
 
-            return Ok(result);
+        [ProducesResponseType(typeof(GenericResponse<Loan>), 200)]
+        public async Task<IActionResult> AddUserLoan(Loan request)
+        {
+            var result = await _loanService.AddUserLoan(request);
+
+            return JsonContent(result);
         }
 
     }

@@ -1,46 +1,51 @@
-﻿using CRD.Services.UserService;
+﻿using CRD.Interfaces;
+using CRD.Models;
+using CRD.Services;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRD.Controllers
 {
-    public class UserController : Controller
+    public class UserController : ApiBaseController
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        private IConfiguration _configuration;
+        private static readonly ILog log = LogManager.GetLogger("Rolling", nameof(UserController));
+        public UserController(IConfiguration configuration, IUserService userService) : base(configuration)
         {
+            this._configuration = configuration;
             this._userService = userService;
         }
 
-
-        [HttpGet(nameof(GetAllUsers))]
-        public async Task<ActionResult<List<User>>> GetAllUsers()
-        {
-            var result = _userService.GetAllUsers();
-
-            return result;
-        }
-
         [HttpGet("{userID}")]
-        public async Task<ActionResult<User>> GetUserByID(int userID)
+        [ProducesResponseType(typeof(GenericResponse<User>), 200)]
+        public async Task<IActionResult> GetUserByID(int userID)
         {
-            var result = _userService.GetUserByID(userID);
+            var result = await _userService.GetUserByID(userID);
 
-            if (result is null)
-            {
-                return NotFound("User Does Not Exist.");
-            }
-
-            return result;
+            return JsonContent(result);
         }
 
 
         [HttpPost(nameof(Register))]
-        public ActionResult<User> Register(UserRequestDto request)
+        [ProducesResponseType(typeof(GenericResponse<User>), 200)]
+        public async Task<IActionResult> Register(UserRequestDto request)
         {
 
-            var result = _userService.Register(request);
+            var result = await _userService.Register(request);
 
-            return result;
+            return JsonContent(result);
         }
+
+        [HttpPost(nameof(Login))]
+
+        [ProducesResponseType(typeof(GenericResponse<User>), 200)]
+        public async Task<IActionResult> Login(UserLoginRequestDto request)
+        {
+            var result = await _userService.Login(request);
+
+            return JsonContent(result);
+        }
+
     }
 }

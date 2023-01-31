@@ -4,7 +4,7 @@ namespace CRD.Models
 {
     public class Loan
     {
-        public int LoanID { get; set; }
+        public int ID { get; set; }
         public int UserID { get; set; }
         public LoanType LoanType { get; set; }
         public decimal Amount { get; set; }
