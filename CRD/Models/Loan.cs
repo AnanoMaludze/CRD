@@ -15,5 +15,16 @@ namespace CRD.Models
 
     }
 
-  
+    public class UpdateLoanRequest
+    {
+        public int ID { get; set; }
+        public LoanType LoanType { get; set; }
+        public decimal Amount { get; set; }
+        public Currency CurrencyCode { get; set; }
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
+
+    }
+
+
 }

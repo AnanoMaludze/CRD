@@ -12,14 +12,31 @@ namespace CRD.Services
     {
         protected readonly UserRepository _userRepository;
 
+        private readonly IHttpContextAccessor _httpContentAccessor;
+
         private readonly IConfiguration configuration;
 
         private readonly IAuthService _authService;
-        public UserService(IConfiguration configuration, IAuthService authService, UserRepository userRepository) : base(configuration)
+        public UserService(IConfiguration configuration, 
+            IAuthService authService, 
+            IHttpContextAccessor httpContentAccessor, UserRepository userRepository) : base(configuration)
         {
             _authService = authService;
             _userRepository = userRepository;
+            _httpContentAccessor = httpContentAccessor;
         }
+
+        public string GetUserID()
+        {
+            var result = string.Empty;
+
+            if (_httpContentAccessor.HttpContext != null)
+            {
+                result = _httpContentAccessor.HttpContext.User?.Identity?.Name;
+            }
+            return result;
+        }
+
         public async Task<GenericResponse<User>> GetUserByID(int userID)
         {
             try

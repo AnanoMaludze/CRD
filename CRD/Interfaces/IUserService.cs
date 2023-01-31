@@ -2,8 +2,10 @@
 {
     public interface IUserService
     {
-         Task<GenericResponse<User>> GetUserByID(int userID);
-         Task<GenericResponse<User>> Register(UserRequestDto request);
-         Task<GenericResponse<User>> Login(UserLoginRequestDto request);
+        Task<GenericResponse<User>> GetUserByID(int userID);
+        Task<GenericResponse<User>> Register(UserRequestDto request);
+        Task<GenericResponse<User>> Login(UserLoginRequestDto request);
+
+        string GetUserID();
     }
 }

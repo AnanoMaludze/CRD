@@ -66,7 +66,7 @@ namespace CRD.Services
 
         }
 
-        public async Task<GenericResponseWithoutData> UpdateUserLoan(Loan request)
+        public async Task<GenericResponseWithoutData> UpdateUserLoan(UpdateLoanRequest request, int userID)
         {
             try
             {
@@ -74,6 +74,15 @@ namespace CRD.Services
                 {
 
                     var loan = await _loanRepository.GetLoanById(request.ID, tw);
+
+                    if (loan.UserID != userID)
+                    {
+                        if (loan.LoanStatusCode == LoanStatusCode.Rejected || loan.LoanStatusCode == LoanStatusCode.Accepted)
+                        {
+                            return new GenericResponseWithoutData(status: StatusCode.USER_CANNOT_CHANGE_THIS_LOAN);
+
+                        }
+                    }
 
                     if (loan == null)
                     {

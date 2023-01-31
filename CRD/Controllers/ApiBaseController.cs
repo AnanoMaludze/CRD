@@ -27,7 +27,6 @@ namespace CRD.Controllers
 
             var jsonContent = JsonConvert.SerializeObject(message, serializerSettings);
 
-            //log.Debug(jsonContent);
 
             return new ContentResult()
             {

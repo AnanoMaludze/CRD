@@ -35,7 +35,12 @@ namespace CRD.Repository
                                                             select @ID;
                                                         ", new
             {
-                
+                request.UserID,
+                request.LoanType,
+                request.Amount,
+                request.CurrencyCode,
+                request.FromDate, request.ToDate, 
+                request.LoanStatusCode
 
             });
 
