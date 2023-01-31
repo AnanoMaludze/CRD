@@ -62,7 +62,6 @@ namespace CRD.Services
 
                 string token = _authService.CreateToken(new CreateTokenModel
                 {
-                    Password = passwordHash,
                     Username = request.Username,
                     UserID = user.ID
                 });
@@ -84,7 +83,7 @@ namespace CRD.Services
 
                 request.Password = passwordHash;
 
-                using (var tw = GetTransactionWrapper())
+                using (var tw = GetTransactionWrapperWithoutTransaction())
                 {
                     var registeredUserID = await _userRepository.Register(request, tw);
 

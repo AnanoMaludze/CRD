@@ -24,7 +24,9 @@ namespace CRD.Services
 
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+
+                new Claim(ClaimTypes.Name, user.Username.ToString())
             };
 
             string symKey = _configuration.GetSection("AppSettings:Token").Value!;
