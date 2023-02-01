@@ -96,6 +96,24 @@ namespace CRD.Services
         {
             try
             {
+
+                if (request.Password.Length < 8 )
+                {
+                    return new GenericResponse<User>(status: Enums.StatusCode.PASSWORD_SHOULD_HAVE_AT_LEAST_8_CHARACTERS);
+                   
+                }
+
+                if (request.Password.Contains(" "))
+                {
+                    return new GenericResponse<User>(status: Enums.StatusCode.PASSWORD_SHOULD_NOT_CONTAIN_SPACE);
+
+                }
+                if(!request.Password.Any(char.IsLower) || !request.Password.Any(char.IsUpper))
+                {
+                    return new GenericResponse<User>(status: Enums.StatusCode.PASSWORD_SHOULD_CONTAIN_AT_LEAST_ONE_LOWER_AND_ONE_UPPER_CASE);
+
+                }
+
                 string passwordHash = request.Password.GetHash<SHA256>();
 
                 request.Password = passwordHash;

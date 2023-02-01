@@ -48,7 +48,7 @@ namespace CRD.Repository
         }
         public async Task<List<Loan>> GetUserLoans(int userID, TransactionWrapper tw)
         {
-            var loan = await tw.Connection.QueryAsync<Loan>(@"select * from dbo.Loan where UserID = @userID",
+            var loan = await tw.Connection.QueryAsync<Loan>(@"select * from dbo.Loan where UserID = @userID and IsDeleted = 0",
                 new
                 {
                     @userID = userID,
@@ -59,7 +59,7 @@ namespace CRD.Repository
 
         public async Task<Loan> GetLoanById(int loanID)
         {
-            var loan = await Connection.QuerySingleOrDefaultAsync<Loan>(@"select * from dbo.Loan where ID = @ID",
+            var loan = await Connection.QuerySingleOrDefaultAsync<Loan>(@"select * from dbo.Loan where ID = @ID and IsDeleted = 0",
                 new
                 {
                     ID = loanID,
@@ -80,6 +80,7 @@ namespace CRD.Repository
                                                   ,[FromDate] = @FromDate
                                                   ,[ToDate] = @ToDate
                                                   ,[LoanStatusCode] = @LoanStatusCode
+                                                  ,[IsDeleted]=@IsDeleted
                                              WHERE ID = @id 
                                             ",
                 new
@@ -90,6 +91,7 @@ namespace CRD.Repository
                     model.FromDate,
                     model.ToDate,
                     model.LoanStatusCode,
+                    model.IsDeleted,
                     model.ID
                 }, transaction: tw.Transaction);
         }

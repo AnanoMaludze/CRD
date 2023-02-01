@@ -20,20 +20,31 @@ namespace CRD.Controllers
 
         protected IActionResult JsonContent(object message)
         {
-            var serializerSettings = new JsonSerializerSettings
+            try
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
 
-            var jsonContent = JsonConvert.SerializeObject(message, serializerSettings);
+                var serializerSettings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
 
+                var jsonContent = JsonConvert.SerializeObject(message, serializerSettings);
 
-            return new ContentResult()
+                log.Debug(jsonContent);
+
+                return new ContentResult()
+                {
+                    Content = jsonContent,
+                    ContentType = "application/json",
+                    StatusCode = 200
+                };
+
+            }
+            catch (Exception)
             {
-                Content = jsonContent,
-                ContentType = "application/json",
-                StatusCode = 200
-            };
+
+                throw;
+            }
         }
     }
 }

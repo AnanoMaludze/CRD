@@ -41,7 +41,7 @@ namespace CRD.Controllers
         [ProducesResponseType(typeof(GenericResponse<User>), 200)]
         public async Task<IActionResult> Register(UserRequestDto request)
         {
-
+            
             var result = await _userService.Register(request);
 
             return JsonContent(result);

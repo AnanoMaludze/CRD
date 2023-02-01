@@ -111,6 +111,7 @@ namespace CRD.Services
                     loan.CurrencyCode = request.CurrencyCode;
                     loan.Amount = request.Amount;
                     loan.LoanType = request.LoanType;
+                    loan.IsDeleted= request.IsDeleted;
 
                     await _loanRepository.UpdateUserLoan(loan, tw);
 

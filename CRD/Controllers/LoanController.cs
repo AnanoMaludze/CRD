@@ -29,6 +29,7 @@ namespace CRD.Controllers
         [ProducesResponseType(typeof(GenericResponse<List<Loan>>), 200)]
         public async Task<IActionResult> GetUserLoans()
         {
+
             int useridint = 0;
 
             (int.TryParse)(_userService.GetUserID(), out useridint);
@@ -44,6 +45,7 @@ namespace CRD.Controllers
         [ProducesResponseType(typeof(GenericResponseWithoutData), 200)]
         public async Task<IActionResult> UpdateUserLoan(UpdateLoanRequest request)
         {
+            HttpContext.Request.EnableBuffering();
             int useridint = 0;
 
             (int.TryParse)(_userService.GetUserID(), out useridint);

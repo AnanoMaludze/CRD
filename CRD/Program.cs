@@ -2,6 +2,8 @@ global using CRD.Models;
 using CRD.Interfaces;
 using CRD.Repository;
 using CRD.Services;
+using log4net.Config;
+using log4net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
@@ -43,11 +45,6 @@ options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenVali
 
 
 
-
-//builder.Services.AddScoped<BaseService>();
-
-//builder.Services.AddScoped<BaseRepository>();
-
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<LoanRepository>();
 
@@ -60,12 +57,18 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
+//app.UseHttpLogging();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+var repository = LogManager.CreateRepository("Rolling");
+
+XmlConfigurator.Configure(repository, new FileInfo("log4net.xml"));
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

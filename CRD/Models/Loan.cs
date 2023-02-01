@@ -13,6 +13,8 @@ namespace CRD.Models
         public DateTime ToDate { get; set; }
         public LoanStatusCode LoanStatusCode { get; set; }
 
+        public bool IsDeleted { get; set; }
+
     }
 
     public class UpdateLoanRequest
@@ -23,6 +25,7 @@ namespace CRD.Models
         public Currency CurrencyCode { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
+        public bool IsDeleted { get; set; }
 
     }
 
