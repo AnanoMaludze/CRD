@@ -38,7 +38,6 @@ namespace CRD.Models
             }
         }
 
-        public List<object> Objects { get; set; }
 
         private StatusCode status;
         private T response;
@@ -51,13 +50,6 @@ namespace CRD.Models
         {
             this.status = status;
             this.response = response;
-        }
-
-        public GenericResponse(StatusCode status, T response, params object[] objects)
-        {
-            this.status = status;
-            this.response = response;
-            this.Objects = objects.ToList();
         }
     }
 }

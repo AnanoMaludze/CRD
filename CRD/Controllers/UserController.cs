@@ -2,7 +2,9 @@
 using CRD.Models;
 using CRD.Services;
 using log4net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace CRD.Controllers
 {
@@ -20,11 +22,16 @@ namespace CRD.Controllers
             this._authService = authService;
         }
 
-        [HttpGet("{userID}")]
+        [HttpGet("GetLoggedInUser"), Authorize(Roles = "User")]
+
         [ProducesResponseType(typeof(GenericResponse<User>), 200)]
-        public async Task<IActionResult> GetUserByID(int userID)
+        public async Task<IActionResult> GetLoggedInUser()
         {
-            var result = await _userService.GetUserByID(userID);
+            int useridint = 0;
+
+            (int.TryParse)(_userService.GetUserID(), out useridint);
+
+            var result = await _userService.GetUserByID(useridint);
 
             return JsonContent(result);
         }

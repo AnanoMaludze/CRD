@@ -46,9 +46,9 @@ namespace CRD.Repository
 
             return loanID;
         }
-        public async Task<List<Loan>> GetUserLoans(int userID)
+        public async Task<List<Loan>> GetUserLoans(int userID, TransactionWrapper tw)
         {
-            var loan = await Connection.QueryAsync<Loan>(@"select * from dbo.Loan where UserID = @userID",
+            var loan = await tw.Connection.QueryAsync<Loan>(@"select * from dbo.Loan where UserID = @userID",
                 new
                 {
                     @userID = userID,

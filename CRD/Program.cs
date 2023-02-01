@@ -44,9 +44,9 @@ options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenVali
 
 
 
-builder.Services.AddScoped<BaseService>();
+//builder.Services.AddScoped<BaseService>();
 
-builder.Services.AddScoped<BaseRepository>();
+//builder.Services.AddScoped<BaseRepository>();
 
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<LoanRepository>();

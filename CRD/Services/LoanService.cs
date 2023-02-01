@@ -61,7 +61,7 @@ namespace CRD.Services
             {
                 var tw = GetTransactionWrapperWithoutTransaction();
 
-                var userLoans = await _loanRepository.GetUserLoans(userID);
+                var userLoans = await _loanRepository.GetUserLoans(userID, tw);
 
                 if (userLoans == null)
                 {
@@ -71,7 +71,7 @@ namespace CRD.Services
             }
             catch (Exception e)
             {
-
+                
                 throw;
             }
 
