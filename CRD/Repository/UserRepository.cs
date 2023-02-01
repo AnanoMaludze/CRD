@@ -61,11 +61,11 @@ namespace CRD.Repository
 
         public async Task<User> GetUserByID(int userID, TransactionWrapper tw)
         {
-            var user = await Connection.QueryFirstOrDefaultAsync<User>(@"select * from dbo.[User] where ID = @ID",
+            var user = await tw.Connection.QueryFirstOrDefaultAsync<User>(@"select * from dbo.[User] where ID = @ID",
                 new
                 {
                     ID = userID,
-                });
+                }, transaction: tw.Transaction);
 
             return user;
         }

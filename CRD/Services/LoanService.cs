@@ -17,15 +17,25 @@ namespace CRD.Services
         }
 
 
-        public async Task<GenericResponse<Loan>> AddUserLoan(Loan request)
+        public async Task<GenericResponse<Loan>> AddUserLoan(AddLoan request, int userID)
         {
             try
             {
-                using (var tw = GetTransactionWrapper())
-                {
-                    var insertedLoanID = await _loanRepository.AddUserLoan(request, tw);
+                int insertedLoanID;
 
-                    var loan = await _loanRepository.GetLoanById(insertedLoanID, tw);
+                using (var tw = GetTransactionWrapperWithNoLock())
+                {
+
+                    insertedLoanID = await _loanRepository.AddUserLoan(request, userID, tw);
+
+
+                    tw.Transaction.Commit();
+
+                }
+
+                if (insertedLoanID != 0)
+                {
+                    var loan = await _loanRepository.GetLoanById(insertedLoanID);
 
                     if (loan == null)
                     {
@@ -35,6 +45,7 @@ namespace CRD.Services
 
                     return new GenericResponse<Loan>(status: StatusCode.LOAN_ADDED, loan);
                 }
+                return new GenericResponse<Loan>(status: StatusCode.ERROR);
             }
             catch (Exception e)
             {
@@ -70,30 +81,31 @@ namespace CRD.Services
         {
             try
             {
-                using (var tw = GetTransactionWrapper())
+
+
+                var loan = await _loanRepository.GetLoanById(request.ID);
+
+                if (loan.UserID != userID)
                 {
-
-                    var loan = await _loanRepository.GetLoanById(request.ID, tw);
-
-                    if (loan.UserID != userID)
-                    {
-                        if (loan.LoanStatusCode == LoanStatusCode.Rejected || loan.LoanStatusCode == LoanStatusCode.Accepted)
-                        {
-                            return new GenericResponseWithoutData(status: StatusCode.USER_CANNOT_CHANGE_THIS_LOAN);
-
-                        }
-                    }
-
-                    if (loan == null)
-                    {
-                        return new GenericResponseWithoutData(status: StatusCode.ERROR);
-
-                    }
                     if (loan.LoanStatusCode == LoanStatusCode.Rejected || loan.LoanStatusCode == LoanStatusCode.Accepted)
                     {
-                        return new GenericResponseWithoutData(status: StatusCode.LOAN_CANNOT_BE_UPDATED);
+                        return new GenericResponseWithoutData(status: StatusCode.USER_CANNOT_CHANGE_THIS_LOAN);
 
                     }
+                }
+
+                if (loan == null)
+                {
+                    return new GenericResponseWithoutData(status: StatusCode.ERROR);
+
+                }
+                if (loan.LoanStatusCode == LoanStatusCode.Rejected || loan.LoanStatusCode == LoanStatusCode.Accepted)
+                {
+                    return new GenericResponseWithoutData(status: StatusCode.LOAN_CANNOT_BE_UPDATED);
+
+                }
+                using (var tw = GetTransactionWrapper())
+                {
                     loan.FromDate = request.FromDate;
                     loan.ToDate = request.ToDate;
                     loan.CurrencyCode = request.CurrencyCode;
@@ -101,6 +113,8 @@ namespace CRD.Services
                     loan.LoanType = request.LoanType;
 
                     await _loanRepository.UpdateUserLoan(loan, tw);
+
+                    tw.Transaction.Commit();
 
                     return new GenericResponseWithoutData(status: StatusCode.LOAN_UPDATED);
 

@@ -10,7 +10,7 @@ namespace CRD.Repository
 
         }
 
-        public async Task<int> AddUserLoan(Loan request, TransactionWrapper tw)
+        public async Task<int> AddUserLoan(AddLoan request, int userID, TransactionWrapper tw)
         {
             var loanID = await tw.Connection.QueryFirstAsync<int>(@"
                                                             declare @ID int;
@@ -29,20 +29,19 @@ namespace CRD.Repository
                                                             ,@CurrencyCode
                                                             ,@FromDate
                                                             ,@ToDate
-                                                            ,@LoanStatusCode
+                                                            ,1
                                                             )
                                                             set @ID = SCOPE_IDENTITY();
                                                             select @ID;
                                                         ", new
             {
-                request.UserID,
+                @UserID = userID,
                 request.LoanType,
                 request.Amount,
                 request.CurrencyCode,
-                request.FromDate, request.ToDate, 
-                request.LoanStatusCode
-
-            });
+                request.FromDate,
+                request.ToDate
+            }, tw.Transaction);
 
 
             return loanID;
@@ -52,19 +51,19 @@ namespace CRD.Repository
             var loan = await Connection.QueryAsync<Loan>(@"select * from dbo.Loan where UserID = @userID",
                 new
                 {
-                    ID = userID,
+                    @userID = userID,
                 });
 
-            return loan.ToList(); 
+            return loan.ToList();
         }
 
-        public async Task<Loan> GetLoanById(int loanID, TransactionWrapper tw)
+        public async Task<Loan> GetLoanById(int loanID)
         {
             var loan = await Connection.QuerySingleOrDefaultAsync<Loan>(@"select * from dbo.Loan where ID = @ID",
                 new
                 {
                     ID = loanID,
-                }, transaction: tw.Transaction);
+                });
 
             return loan;
         }
@@ -73,7 +72,7 @@ namespace CRD.Repository
         public async Task UpdateUserLoan(Loan model, TransactionWrapper tw)
         {
 
-            await Connection.ExecuteAsync(@"
+            await tw.Connection.ExecuteAsync(@"
                                             UPDATE [dbo].[Loan]
                                                SET [LoanType] = @LoanType
                                                   ,[Amount] = @Amount

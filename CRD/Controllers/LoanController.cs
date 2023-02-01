@@ -56,9 +56,13 @@ namespace CRD.Controllers
         [HttpPost("AddUserLoan"), Authorize(Roles = "User")]
 
         [ProducesResponseType(typeof(GenericResponse<Loan>), 200)]
-        public async Task<IActionResult> AddUserLoan(Loan request)
+        public async Task<IActionResult> AddUserLoan(AddLoan request)
         {
-            var result = await _loanService.AddUserLoan(request);
+            int userID = 0;
+
+            (int.TryParse)(_userService.GetUserID(), out userID);
+
+            var result = await _loanService.AddUserLoan(request, userID);
 
             return JsonContent(result);
         }

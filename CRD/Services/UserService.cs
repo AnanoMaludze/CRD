@@ -100,7 +100,7 @@ namespace CRD.Services
 
                 request.Password = passwordHash;
 
-                using (var tw = GetTransactionWrapperWithoutTransaction())
+                using (var tw = GetTransactionWrapper())
                 {
                     var registeredUserID = await _userRepository.Register(request, tw);
 
@@ -110,7 +110,7 @@ namespace CRD.Services
                     {
                         return new GenericResponse<User>(status: Enums.StatusCode.REGISTRATION_ERROR);
                     }
-
+                    tw.Transaction.Commit();
                     return new GenericResponse<User>(status: Enums.StatusCode.SUCCESS, user);
                 }
 
