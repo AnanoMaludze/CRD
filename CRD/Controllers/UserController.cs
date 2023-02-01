@@ -39,7 +39,7 @@ namespace CRD.Controllers
 
         [HttpPost(nameof(Register))]
         [ProducesResponseType(typeof(GenericResponse<User>), 200)]
-        public async Task<IActionResult> Register(UserRequestDto request)
+        public async Task<IActionResult> Register([FromBody] UserRequestDto request)
         {
             
             var result = await _userService.Register(request);
@@ -50,7 +50,7 @@ namespace CRD.Controllers
         [HttpPost(nameof(Login))]
 
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
-        public async Task<IActionResult> Login(UserLoginRequestDto request)
+        public async Task<IActionResult> Login([FromBody] UserLoginRequestDto request)
         {
             var result = await _userService.Login(request);
 
@@ -62,7 +62,7 @@ namespace CRD.Controllers
                     Username = result.Response.Username,
                 });
 
-                return Ok(token);
+                return JsonContent(token);
             }
 
             return JsonContent(result);

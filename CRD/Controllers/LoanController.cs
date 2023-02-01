@@ -43,7 +43,7 @@ namespace CRD.Controllers
         [HttpPut("UpdateUserLoan"), Authorize(Roles = "User")]
 
         [ProducesResponseType(typeof(GenericResponseWithoutData), 200)]
-        public async Task<IActionResult> UpdateUserLoan(UpdateLoanRequest request)
+        public async Task<IActionResult> UpdateUserLoan([FromBody] UpdateLoanRequest request)
         {
             HttpContext.Request.EnableBuffering();
             int useridint = 0;
@@ -58,7 +58,7 @@ namespace CRD.Controllers
         [HttpPost("AddUserLoan"), Authorize(Roles = "User")]
 
         [ProducesResponseType(typeof(GenericResponse<Loan>), 200)]
-        public async Task<IActionResult> AddUserLoan(AddLoan request)
+        public async Task<IActionResult> AddUserLoan([FromBody] AddLoan request)
         {
             int userID = 0;
 

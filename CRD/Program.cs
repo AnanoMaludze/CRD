@@ -7,6 +7,7 @@ using log4net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
+using CRD.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,8 @@ builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
+app.UseMiddleware(typeof(CheckMiddleware));
 
 //app.UseHttpLogging();
 
