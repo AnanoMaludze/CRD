@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net;
 using System.Text;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace CRD.Middleware
 {
@@ -38,10 +39,12 @@ namespace CRD.Middleware
             }
             else
             {
+                log.Debug($"Method: {httpContext.Request.Method}");
+
                 if (!string.IsNullOrWhiteSpace(httpContext.Request.Path.Value))
                 {
 
-                    log.Debug( $"{httpContext.Request.PathBase}{httpContext.Request.Path.Value}");
+                    log.Debug( $"Path: {httpContext.Request.Path.Value}");
                 }
 
 
@@ -53,7 +56,7 @@ namespace CRD.Middleware
 
                 if (!string.IsNullOrWhiteSpace(requestBody))
                 {
-                    log.Debug(requestBody);
+                    log.Debug($"Body: {requestBody}");
                 }
 
                 await _next.Invoke(httpContext);
