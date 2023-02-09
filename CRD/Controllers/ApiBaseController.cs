@@ -10,41 +10,48 @@ namespace CRD.Controllers
     {
         private readonly IConfiguration configuration;
 
+        private readonly IHttpContextAccessor _httpContentAccessor;
+
         private static readonly ILog log = LogManager.GetLogger("Rolling", nameof(ApiBaseController));
 
-        protected ApiBaseController(IConfiguration configuration)
+        protected ApiBaseController(IConfiguration configuration, IHttpContextAccessor httpContentAccessor)
         {
             this.configuration = configuration;
+            _httpContentAccessor = httpContentAccessor;
+        }
+
+
+        protected int GetUserID()
+        {
+            var result = string.Empty;
+
+            if (_httpContentAccessor.HttpContext != null)
+            {
+                result = _httpContentAccessor.HttpContext.User?.Identity?.Name;
+            }
+
+            return Convert.ToInt32(result);
         }
 
 
         protected IActionResult JsonContent(object message)
         {
-            try
+            var serializerSettings = new JsonSerializerSettings
             {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
 
-                var serializerSettings = new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                };
+            var jsonContent = JsonConvert.SerializeObject(message, serializerSettings);
 
-                var jsonContent = JsonConvert.SerializeObject(message, serializerSettings);
+            log.Debug(jsonContent);
 
-                log.Debug(jsonContent);
-
-                return new ContentResult()
-                {
-                    Content = jsonContent,
-                    ContentType = "application/json",
-                    StatusCode = 200
-                };
-
-            }
-            catch (Exception)
+            return new ContentResult()
             {
+                Content = jsonContent,
+                ContentType = "application/json",
+                StatusCode = 200
+            };
 
-                throw;
-            }
         }
     }
 }

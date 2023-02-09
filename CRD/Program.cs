@@ -59,6 +59,7 @@ builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 app.UseMiddleware(typeof(CheckMiddleware));
+app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
 //app.UseHttpLogging();
 

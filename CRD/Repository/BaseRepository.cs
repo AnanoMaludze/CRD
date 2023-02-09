@@ -27,36 +27,6 @@ namespace CRD.Repository
                 return new SqlConnection(connectionString);
             }
         }
-
-        public async Task<List<List<dynamic>>> CallProcedureMultipleDataSet(string procedureName, object parameters, TransactionWrapper tw)
-        {
-            var grid = await tw.Connection.QueryMultipleAsync(
-                procedureName,
-                parameters,
-                transaction: tw.Transaction,
-                commandType: System.Data.CommandType.StoredProcedure);
-
-            var result = new List<List<dynamic>>();
-
-            while (!grid.IsConsumed)
-            {
-                var tempResult = await grid.ReadAsync();
-
-                result.Add(tempResult.ToList());
-            }
-
-            return result;
-        }
-
-        public async Task<T> CallProcedureSingleValueSetPOCO<T>(string procedure, object parameters, TransactionWrapper tw)
-        {
-            var singleResult = await tw.Connection.QueryFirstOrDefaultAsync<T>(
-                procedure,
-                parameters,
-                transaction: tw.Transaction,
-                commandType: CommandType.StoredProcedure);
-
-            return singleResult;
-        }
+       
     }
 }

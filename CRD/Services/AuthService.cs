@@ -2,6 +2,7 @@
 using CRD.Interfaces;
 using CRD.Models;
 using CRD.Utils;
+using log4net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,6 +14,7 @@ namespace CRD.Services
     public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
+
 
         public AuthService(IConfiguration configuration)
         {

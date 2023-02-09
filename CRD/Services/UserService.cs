@@ -1,9 +1,7 @@
 ﻿using CRD.Interfaces;
-using CRD.Models;
 using CRD.Repository;
 using CRD.Utils;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using log4net;
 using System.Security.Cryptography;
 
 namespace CRD.Services
@@ -12,31 +10,17 @@ namespace CRD.Services
     {
         protected readonly UserRepository _userRepository;
 
-        private readonly IHttpContextAccessor _httpContentAccessor;
-
-        private readonly IConfiguration configuration;
-
+        private static readonly ILog log = LogManager.GetLogger("Rolling", nameof(UserService));
         private readonly IAuthService _authService;
         public UserService(IConfiguration configuration, 
             IAuthService authService, 
-            IHttpContextAccessor httpContentAccessor, UserRepository userRepository) : base(configuration)
+             UserRepository userRepository) : base(configuration)
         {
             _authService = authService;
             _userRepository = userRepository;
-            _httpContentAccessor = httpContentAccessor;
         }
 
-        public string GetUserID()
-        {
-            var result = string.Empty;
-
-            if (_httpContentAccessor.HttpContext != null)
-            {
-                result = _httpContentAccessor.HttpContext.User?.Identity?.Name;
-            }
-            return result;
-        }
-
+       
         public async Task<GenericResponse<User>> GetUserByID(int userID)
         {
             try
@@ -54,6 +38,7 @@ namespace CRD.Services
             catch (Exception e)
             {
 
+                log.Error(e);
                 throw;
             }
         }
@@ -87,31 +72,29 @@ namespace CRD.Services
             }
             catch (Exception e)
             {
-
+                log.Error(e);
                 throw;
             }
         }
 
-        public async Task<GenericResponse<User>> Register(UserRequestDto request)
+        public async Task<GenericResponse<int>> Register(UserRequestDto request)
         {
             try
             {
 
                 if (request.Password.Length < 8 )
                 {
-                    return new GenericResponse<User>(status: Enums.StatusCode.PASSWORD_SHOULD_HAVE_AT_LEAST_8_CHARACTERS);
-                   
+                    return new GenericResponse<int>(status: Enums.StatusCode.PASSWORD_SHOULD_HAVE_AT_LEAST_8_CHARACTERS);
                 }
 
                 if (request.Password.Contains(" "))
                 {
-                    return new GenericResponse<User>(status: Enums.StatusCode.PASSWORD_SHOULD_NOT_CONTAIN_SPACE);
-
+                    return new GenericResponse<int>(status: Enums.StatusCode.PASSWORD_SHOULD_NOT_CONTAIN_SPACE);
                 }
+
                 if(!request.Password.Any(char.IsLower) || !request.Password.Any(char.IsUpper))
                 {
-                    return new GenericResponse<User>(status: Enums.StatusCode.PASSWORD_SHOULD_CONTAIN_AT_LEAST_ONE_LOWER_AND_ONE_UPPER_CASE);
-
+                    return new GenericResponse<int>(status: Enums.StatusCode.PASSWORD_SHOULD_CONTAIN_AT_LEAST_ONE_LOWER_AND_ONE_UPPER_CASE);
                 }
 
                 string passwordHash = request.Password.GetHash<SHA256>();
@@ -122,20 +105,20 @@ namespace CRD.Services
                 {
                     var registeredUserID = await _userRepository.Register(request, tw);
 
-                    var user = await _userRepository.GetUserByID(registeredUserID, tw);
-
-                    if (user == null)
-                    {
-                        return new GenericResponse<User>(status: Enums.StatusCode.REGISTRATION_ERROR);
-                    }
                     tw.Transaction.Commit();
-                    return new GenericResponse<User>(status: Enums.StatusCode.SUCCESS, user);
+
+                    if (registeredUserID == 0)
+                    {
+                        return new GenericResponse<int>(status: Enums.StatusCode.REGISTRATION_ERROR);
+                    }
+                    
+                    return new GenericResponse<int>(status: Enums.StatusCode.SUCCESS, registeredUserID);
                 }
 
             }
             catch (Exception e)
             {
-
+                log.Error(e);
                 throw;
             }
         }

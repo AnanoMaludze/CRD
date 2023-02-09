@@ -12,14 +12,19 @@ namespace CRD.Controllers
     {
         private readonly IUserService _userService;
 
+
+        private readonly IHttpContextAccessor _httpContentAccessor;
+
         private readonly IAuthService _authService;
         private IConfiguration _configuration;
         private static readonly ILog log = LogManager.GetLogger("Rolling", nameof(UserController));
-        public UserController(IConfiguration configuration, IUserService userService, IAuthService authService) : base(configuration)
+        public UserController(IConfiguration configuration, IUserService userService, IAuthService authService, IHttpContextAccessor httpContentAccessor) 
+            : base(configuration, httpContentAccessor)
         {
             this._configuration = configuration;
             this._userService = userService;
             this._authService = authService;
+            this._httpContentAccessor = httpContentAccessor;
         }
 
         [HttpGet("GetLoggedInUser"), Authorize(Roles = "User")]
@@ -27,18 +32,16 @@ namespace CRD.Controllers
         [ProducesResponseType(typeof(GenericResponse<User>), 200)]
         public async Task<IActionResult> GetLoggedInUser()
         {
-            int useridint = 0;
+           
 
-            (int.TryParse)(_userService.GetUserID(), out useridint);
-
-            var result = await _userService.GetUserByID(useridint);
+            var result = await _userService.GetUserByID(GetUserID());
 
             return JsonContent(result);
         }
 
 
         [HttpPost(nameof(Register))]
-        [ProducesResponseType(typeof(GenericResponse<User>), 200)]
+        [ProducesResponseType(typeof(GenericResponse<int>), 200)]
         public async Task<IActionResult> Register([FromBody] UserRequestDto request)
         {
             

@@ -14,14 +14,20 @@ namespace CRD.Controllers
     public class LoanController : ApiBaseController
     {
         private readonly ILoanService _loanService;
+
+
+        private readonly IHttpContextAccessor _httpContentAccessor;
+
         protected readonly IUserService _userService;
         private IConfiguration _configuration;
         private static readonly ILog log = LogManager.GetLogger("Rolling", nameof(LoanController));
-        public LoanController(IConfiguration configuration, ILoanService loanService, IUserService userService) : base(configuration)
+        public LoanController(IConfiguration configuration, ILoanService loanService, IUserService userService, IHttpContextAccessor httpContentAccessor)
+            : base(configuration, httpContentAccessor)
         {
             this._configuration = configuration;
             this._loanService = loanService;
-             this._userService = userService;
+            this._userService = userService;
+            this._httpContentAccessor = httpContentAccessor;
         }
 
         [HttpGet("GetUserLoans"), Authorize(Roles = "User")]
@@ -30,11 +36,7 @@ namespace CRD.Controllers
         public async Task<IActionResult> GetUserLoans()
         {
 
-            int useridint = 0;
-
-            (int.TryParse)(_userService.GetUserID(), out useridint);
-
-            var result = await _loanService.GetUserLoans(useridint);
+            var result = await _loanService.GetUserLoans(GetUserID());
 
             return JsonContent(result);
         }
@@ -45,26 +47,18 @@ namespace CRD.Controllers
         [ProducesResponseType(typeof(GenericResponseWithoutData), 200)]
         public async Task<IActionResult> UpdateUserLoan([FromBody] UpdateLoanRequest request)
         {
-            HttpContext.Request.EnableBuffering();
-            int useridint = 0;
-
-            (int.TryParse)(_userService.GetUserID(), out useridint);
-
-            var result = await _loanService.UpdateUserLoan(request, useridint);
+            var result = await _loanService.UpdateUserLoan(request, GetUserID());
 
             return JsonContent(result);
         }
 
         [HttpPost("AddUserLoan"), Authorize(Roles = "User")]
 
-        [ProducesResponseType(typeof(GenericResponse<Loan>), 200)]
+        [ProducesResponseType(typeof(GenericResponseWithoutData), 200)]
         public async Task<IActionResult> AddUserLoan([FromBody] AddLoan request)
         {
-            int userID = 0;
 
-            (int.TryParse)(_userService.GetUserID(), out userID);
-
-            var result = await _loanService.AddUserLoan(request, userID);
+            var result = await _loanService.AddUserLoan(request, GetUserID());
 
             return JsonContent(result);
         }
