@@ -30,7 +30,7 @@ namespace CRD.Controllers
             this._httpContentAccessor = httpContentAccessor;
         }
 
-        [HttpGet("GetUserLoans"), Authorize(Roles = "User")]
+        [HttpGet(nameof(GetUserLoans)), Authorize(Roles = "User")]
 
         [ProducesResponseType(typeof(GenericResponse<List<Loan>>), 200)]
         public async Task<IActionResult> GetUserLoans()
@@ -42,7 +42,7 @@ namespace CRD.Controllers
         }
 
 
-        [HttpPut("UpdateUserLoan"), Authorize(Roles = "User")]
+        [HttpPut(nameof(UpdateUserLoan)), Authorize(Roles = "User")]
 
         [ProducesResponseType(typeof(GenericResponseWithoutData), 200)]
         public async Task<IActionResult> UpdateUserLoan([FromBody] UpdateLoanRequest request)
@@ -52,7 +52,7 @@ namespace CRD.Controllers
             return JsonContent(result);
         }
 
-        [HttpPost("AddUserLoan"), Authorize(Roles = "User")]
+        [HttpPost(nameof(AddUserLoan)), Authorize(Roles = "User")]
 
         [ProducesResponseType(typeof(GenericResponseWithoutData), 200)]
         public async Task<IActionResult> AddUserLoan([FromBody] AddLoan request)

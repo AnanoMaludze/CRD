@@ -27,13 +27,11 @@ namespace CRD.Controllers
             this._httpContentAccessor = httpContentAccessor;
         }
 
-        [HttpGet("GetLoggedInUser"), Authorize(Roles = "User")]
+        [HttpGet(nameof(GetLoggedInUser)), Authorize(Roles = "User")]
 
         [ProducesResponseType(typeof(GenericResponse<User>), 200)]
         public async Task<IActionResult> GetLoggedInUser()
         {
-           
-
             var result = await _userService.GetUserByID(GetUserID());
 
             return JsonContent(result);
