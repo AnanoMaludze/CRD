@@ -50,7 +50,7 @@ namespace CRD.Controllers
             var result = await _loanService.UpdateUserLoan(request, GetUserID());
 
             return JsonContent(result);
-        }
+        } 
 
         [HttpPost(nameof(AddUserLoan)), Authorize(Roles = "User")]
 
